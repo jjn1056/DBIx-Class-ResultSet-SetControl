@@ -9,7 +9,8 @@ following:
 
     package MySchema::ResultSet::Bar;
 
-    use Modern::Perl;
+    use strict;
+    use warnings;
     use parent 'DBIx::Class::ResultSet';
 
     __PACKAGE__->load_components('ResultSet::SetControl');
@@ -31,6 +32,10 @@ and looping over the items in you resultset.
       my ($each, $row) = @_;
       print $each->is_odd ? $row->name . ' is odd' : 'nope, not odd';
     });
+
+**NOTE** If you intend to use this component in many of your resultsets, its best
+practice to write a 'base' resultset that loads this (and any other) components
+from which all your custom resultset classes inherit.
 
 # DESCRIPTION
 
