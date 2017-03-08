@@ -271,7 +271,7 @@ ok $schema
 
 ok $schema
   ->resultset('Person')
-  ->do(sub {
+  ->tap(sub {
     my ($func, $rs, $arg) = @_;
     is $rs->first->id, $arg, 'Did!';
   },1);

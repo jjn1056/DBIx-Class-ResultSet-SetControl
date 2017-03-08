@@ -51,7 +51,7 @@ sub once {
   return $self;
 }
 
-sub do {
+sub tap {
   my($self, $func, @args) = @_;
   my $new_rs = $self->search_rs;
   { local $_ = $new_rs; $func->($func, $new_rs, @args) };
@@ -60,7 +60,7 @@ sub do {
 
 sub times {
   my($self, $times, $func, @args) = @_;
-  $self->do($func, @args) for 1.. $times;
+  $self->tap($func, @args) for 1.. $times;
   return $self;
 }
 
@@ -87,14 +87,14 @@ following:
 
     1;
 
-Then later when you have a resulset of that class:
+Then later when you have a resultset of that class:
 
     my $rs = $schema->resultset('Bar');
 
 You can call methods directly on your object which are related to control flow
 and looping over the items in you resultset.
 
-    $rs->do(sub {
+    $rs->tap(sub {
       print shift->find({id=>1} ? 'found one' : 'nope';
     })->each(sub {
       my ($each, $row) = @_;
@@ -151,7 +151,7 @@ returns the original C<$rs> so you could chain commands:
       ## Do Something
     }, sub {
       warn 'no rows!';
-    })->do(sub {
+    })->tap(sub {
       my $rs = shift;
       ## Do something else
     });
@@ -269,14 +269,14 @@ Useful to isolate the logic for the first row in a resultset.
 B<NOTE> For conciseness in simple cases, we overload C<$_> to equal the value of
 C<$row> as described above.
 
-=head2 do
+=head2 tap
 
 Arguments: $coderef, ?@args
 Returns: Original Resultset
 
 Do a coderef with the resultset passed as an argument.
 
-    $rs->do(sub {
+    $rs->tap(sub {
       my ($func, $rs, $arg) = @_;
       $rs->find({id=>$arg});
     }, 100);
@@ -298,7 +298,7 @@ C<$rs> as described above.
 Arguments: $integer, $coderef, ?@args
 Returns: Original Resultset
 
-Basically this calls L</do> a number of times equal to the first argument.
+Basically this calls L</tap> a number of times equal to the first argument.
 
     $rs->times(3, sub {
       my $rs = shift;

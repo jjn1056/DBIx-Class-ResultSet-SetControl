@@ -19,14 +19,14 @@ following:
 
     1;
 
-Then later when you have a resulset of that class:
+Then later when you have a resultset of that class:
 
     my $rs = $schema->resultset('Bar');
 
 You can call methods directly on your object which are related to control flow
 and looping over the items in you resultset.
 
-    $rs->do(sub {
+    $rs->tap(sub {
       print shift->find({id=>1} ? 'found one' : 'nope';
     })->each(sub {
       my ($each, $row) = @_;
@@ -83,7 +83,7 @@ returns the original `$rs` so you could chain commands:
       ## Do Something
     }, sub {
       warn 'no rows!';
-    })->do(sub {
+    })->tap(sub {
       my $rs = shift;
       ## Do something else
     });
@@ -201,14 +201,14 @@ Useful to isolate the logic for the first row in a resultset.
 **NOTE** For conciseness in simple cases, we overload `$_` to equal the value of
 `$row` as described above.
 
-## do
+## tap
 
 Arguments: $coderef, ?@args
 Returns: Original Resultset
 
 Do a coderef with the resultset passed as an argument.
 
-    $rs->do(sub {
+    $rs->tap(sub {
       my ($func, $rs, $arg) = @_;
       $rs->find({id=>$arg});
     }, 100);
@@ -230,7 +230,7 @@ call recursively.
 Arguments: $integer, $coderef, ?@args
 Returns: Original Resultset
 
-Basically this calls ["do"](#do) a number of times equal to the first argument.
+Basically this calls ["tap"](#tap) a number of times equal to the first argument.
 
     $rs->times(3, sub {
       my $rs = shift;
